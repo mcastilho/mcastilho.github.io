@@ -1,8 +1,8 @@
 # Site wide configuration
 
-title:            Site Title
+title:            Marcio Castilho
 locale:           en_US
-url:              http://localhost:4000
+url:              http://mcastilho.github.io
 
 
 # Jekyll configuration
@@ -26,21 +26,21 @@ kramdown:
 
 # Site owner
 owner:
-  name: Your Name
+  name: Marcio Castilho
   avatar: bio-photo.jpg
-  bio: "Describe your self."
-  email: 
-  disqus-shortname: 
-  twitter: #username
-  facebook: #username
+  bio: "Engineer, Dad, and crazy about software development"
+  email: mcastilho@radsense.com
+  disqus-shortname:
+  twitter: mcastilho
+  facebook: marcio.castilho
   google:
     plus: #username
-    analytics: 
-    verify: 
-    ad-client: 
-    ad-slot: 
-  bing-verify: 
-  github: #username
+    analytics:
+    verify:
+    ad-client:
+    ad-slot:
+  bing-verify:
+  github: mcastilho
   stackoverflow: #http://stackoverflow.com/users/123456/username
   linkedin: #username
   instagram: #username
