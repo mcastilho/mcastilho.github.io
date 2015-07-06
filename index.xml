@@ -16,7 +16,7 @@
       <pubDate>Mon, 06 Jul 2015 15:57:30 EDT</pubDate>
       <author>Marcio Castilho</author>
       <guid>http://marcio.io/2015/07/my-first-post/</guid>
-      <description>&lt;p&gt;For years I have been thinking about creating a spot where I can post articles about programming and tecnology in general. But every attempt to do so have result in complete failure, mostly due to the hassle of setting up maintaining a blog that can be easily updated. I&amp;rsquo;ve never been a fan of Wordpress and have experimented with other solutions like Octopress and Jekyll, but none of them felt right to me.&lt;/p&gt;
+      <description>&lt;p&gt;For years I have been thinking about creating a spot where I can post articles about programming and technology in general. But every attempt to do so have result in complete failure, mostly due to the hassle of setting up maintaining a blog that can be easily updated. I&amp;rsquo;ve never been a fan of Wordpress and have experimented with other solutions like Octopress and Jekyll, but none of them felt right to me.&lt;/p&gt;
 
 &lt;p&gt;Until I have recently discovered Hugo. It&amp;rsquo;s really awesome and easiy to setup, I can use Markdown to simply create new posts and share my world.&lt;/p&gt;
 
