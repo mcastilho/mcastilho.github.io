@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>marcio.io</title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://marcio.io/</link>
+    <language>en-us</language>
+    <author>Marcio Castilho</author>
+    <copyright>2015 Marcio Castilho</copyright>
+    <updated>Sun, 05 Jul 2015 06:26:13 -0500</updated>
+    
+    
+    
+    
+    
+  </channel>
+</rss>
