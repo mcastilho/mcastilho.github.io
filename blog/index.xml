@@ -3,7 +3,7 @@
   <channel>
       <title>marcio.io</title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://marcio.io/</link>
+    <link>http://marcio.io/blog/</link>
     <language>en-us</language>
     <author>Marcio Castilho</author>
     <copyright>2015 Marcio Castilho</copyright>
@@ -29,10 +29,6 @@
 Marcio&lt;/p&gt;
 </description>
     </item>
-    
-    
-    
-    
     
     
   </channel>
