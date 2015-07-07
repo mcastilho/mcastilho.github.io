@@ -295,7 +295,7 @@ type Worker struct {
 func NewWorker(id int, workerPool chan chan Job) Worker {
 	worker := Worker{
 		ID:          id,
-		Work:        make(chan Job),
+		JobChannel:  make(chan Job),
 		WorkerPool:  workerPool,
 		QuitChan:    make(chan bool)}
 
