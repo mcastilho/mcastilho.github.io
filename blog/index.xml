@@ -277,7 +277,6 @@ func (w Worker) Stop() {
                     // dispatch the job to the worker job channel, queuing into the worker
                     // job channel
 					jobChannel &amp;lt;- job
-
 				}(job)
 			}
 		}
