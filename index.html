@@ -281,25 +281,18 @@ type Job struct {
 // A buffered channel that we can send work requests on.
 var JobQueue chan Job
 
-// A pool of workers that are instantianted to perform the work
-var WorkerPool chan chan Job
-
 // Worker represents the worker that executes the job
 type Worker struct {
-	ID          int
-	JobChannel  chan Job
 	WorkerPool  chan chan Job
+	JobChannel  chan Job
 	quit    	chan bool
 }
 
-func NewWorker(id int, workerPool chan chan Job) Worker {
-	worker := Worker{
-		ID:          id,
-		JobChannel:  make(chan Job),
-		WorkerPool:  workerPool,
-		quit:    make(chan bool)}
-
-	return worker
+func NewWorker(workerPool chan chan Job) Worker {
+	return Worker{
+		WorkerPool: workerPool,
+		JobChannel: make(chan Job),
+		quit:       make(chan bool)}
 }
 
 // Start method starts the run loop for the worker, listening for a quit channel in
@@ -365,35 +358,50 @@ func (w Worker) Stop() {
 }
 </code></pre>
 
-<p>During our web server initialization we invoked the <code>StartDispatcher</code> method to create the pool of workers and to start listening for jobs that would appear in the <code>JobQueue</code>.</p>
+<p>During our web server initialization we create a <code>Dispatcher</code> and call <code>Run()</code> to create the pool of workers and to start listening for jobs that would appear in the <code>JobQueue</code>.</p>
 
-<pre><code class="language-go">func StartDispatcher(maxWorkers int) {
+<pre><code class="language-go">dispatcher := NewDispatcher(MaxWorker)
+dispatcher.Run()
+</code></pre>
 
-	WorkerPool = make(chan chan Job, maxWorkers)
+<p>Below is the code for our dispatcher implementation:</p>
 
+<pre><code class="language-go">type Dispatcher struct {
+	// A pool of workers channels that are registered with the dispatcher
+	WorkerPool chan chan Job
+}
+
+func NewDispatcher(maxWorkers int) *Dispatcher {
+	pool := make(chan chan Job, maxWorkers)
+	return &amp;Dispatcher{WorkerPool: pool}
+}
+
+func (d *Dispatcher) Run() {
     // starting n number of workers
-	for i := 0; i &lt; maxWorkers; i++ {
-		worker := NewWorker(i+1, WorkerPool)
+	for i := 0; i &lt; d.maxWorkers; i++ {
+		worker := NewWorker(d.pool)
 		worker.Start()
 	}
 
-	go func() {
-		for {
-			select {
-			case job := &lt;-JobQueue:
-                // a job request has been received
-				go func(job Job) {
-                    // try to obtain a worker job channel that is available.
-                    // this will block until a worker is idle
-					jobChannel := &lt;-WorkerPool
+	go d.dispatch()
+}
 
-                    // dispatch the job to the worker job channel, queuing into the worker
-                    // job channel
-					jobChannel &lt;- job
-				}(job)
-			}
+func (d *Dispatcher) dispatch() {
+	for {
+		select {
+		case job := &lt;-JobQueue:
+			// a job request has been received
+			go func(job Job) {
+				// try to obtain a worker job channel that is available.
+				// this will block until a worker is idle
+				jobChannel := &lt;-d.WorkerPool
+
+				// dispatch the job to the worker job channel, queuing into the worker
+				// job channel
+				jobChannel &lt;- job
+			}(job)
 		}
-	}()
+	}
 }
 </code></pre>
 
