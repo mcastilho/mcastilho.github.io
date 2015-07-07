@@ -289,7 +289,7 @@ type Worker struct {
 	ID          int
 	JobChannel  chan Job
 	WorkerPool  chan chan Job
-	QuitChan    chan bool
+	quit    	chan bool
 }
 
 func NewWorker(id int, workerPool chan chan Job) Worker {
@@ -297,7 +297,7 @@ func NewWorker(id int, workerPool chan chan Job) Worker {
 		ID:          id,
 		JobChannel:  make(chan Job),
 		WorkerPool:  workerPool,
-		QuitChan:    make(chan bool)}
+		quit:    make(chan bool)}
 
 	return worker
 }
@@ -317,7 +317,7 @@ func (w Worker) Start() {
 					log.Errorf(&quot;Error uploading to S3: %s&quot;, err.Error())
 				}
 
-			case &lt;-w.QuitChan:
+			case &lt;-w.quit:
 				// we have received a signal to stop
 				return
 			}
@@ -328,7 +328,7 @@ func (w Worker) Start() {
 // Stop signals the worker to stop listening for work requests.
 func (w Worker) Stop() {
 	go func() {
-		w.QuitChan &lt;- true
+		w.quit &lt;- true
 	}()
 }
 </code></pre>
@@ -382,14 +382,15 @@ func (w Worker) Stop() {
 			select {
 			case job := &lt;-JobQueue:
                 // a job request has been received
-				go func(jobChannel chan Job) {
-                    // try to obtain a worker that is available.
+				go func(job Job) {
+                    // try to obtain a worker job channel that is available.
                     // this will block until a worker is idle
-					worker := &lt;-WorkerPool
+					jobChannel := &lt;-WorkerPool
 
-                    // dispatch the job to the worker, dequeuing from
-                    // the jobChannel
-					worker &lt;- jobChannel
+                    // dispatch the job to the worker job channel, queuing into the worker
+                    // job channel
+					jobChannel &lt;- job
+
 				}(job)
 			}
 		}
