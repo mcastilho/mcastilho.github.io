@@ -34,7 +34,7 @@
 &lt;li&gt;Sidekiq&lt;/li&gt;
 &lt;li&gt;Resque&lt;/li&gt;
 &lt;li&gt;DelayedJob&lt;/li&gt;
-&lt;li&gt;Elasticbeanstlk Worker Tier&lt;/li&gt;
+&lt;li&gt;Elasticbeanstalk Worker Tier&lt;/li&gt;
 &lt;li&gt;RabbitMQ&lt;/li&gt;
 &lt;li&gt;and so on&amp;hellip;&lt;/li&gt;
 &lt;/ul&gt;
