@@ -283,8 +283,7 @@ func (d *Dispatcher) dispatch() {
 				// this will block until a worker is idle
 				jobChannel := &amp;lt;-d.WorkerPool
 
-				// dispatch the job to the worker job channel, queuing into the worker
-				// job channel
+				// dispatch the job to the worker job channel
 				jobChannel &amp;lt;- job
 			}(job)
 		}
