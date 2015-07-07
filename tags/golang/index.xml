@@ -97,7 +97,7 @@ func MultiWriter(writers ...Writer) Writer {
 
 &lt;h3 id=&#34;the-approach:87d0f12486ddffd4cd2e61232b39b4f8&#34;&gt;The Approach&lt;/h3&gt;
 
-&lt;p&gt;Therefore, we could create create a &lt;code&gt;MultiWriter&lt;/code&gt; that is going to write to multiple Hash implementations only performing a single read pass through the original file, as you can see in the code below:&lt;/p&gt;
+&lt;p&gt;Therefore, we could create a &lt;code&gt;MultiWriter&lt;/code&gt; that is going to write to multiple Hash implementations only performing a single read pass through the original file, as you can see in the code below:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func CalculateBasicHashes(rd io.Reader) HashInfo {
 
