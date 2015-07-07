@@ -145,7 +145,7 @@ func payloadHandler(w http.ResponseWriter, r *http.Request) {
 
 &lt;p&gt;To be honest, I have no idea what we were thinking. This must have been a late night full of Red-Bulls. This approach didn&amp;rsquo;t buy us anything, we have traded flawed concurrency with a buffered queue that was simply postponing the problem. Our synchronous processor was only uploading one payload at a time to S3, and since the rate of incoming requests was much larger than the ability of the single processor to upload to S3, our buffered channel queue was quickly reaching its limit and blocking the request handler ability to queue more items.&lt;/p&gt;
 
-&lt;p&gt;We were simply avoiding the problem and started a count-down to the death of our system eventually. Our latency rates kept increasing in a constant rate as minutes after we deployed this flawed version.&lt;/p&gt;
+&lt;p&gt;We were simply avoiding the problem and started a count-down to the death of our system eventually. Our latency rates kept increasing in a constant rate minutes after we deployed this flawed version.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://marcio.io/img/cloudwatch-latency.png&#34; alt=&#34;cloudwatch-latency&#34; /&gt;&lt;/p&gt;
 
