@@ -22,13 +22,13 @@
 
 &lt;p&gt;What is interesting is that for the last 9 years or so, all the web backend development that I have been involved in has been mostly done in Ruby on Rails. Don&amp;rsquo;t take me wrong, I love Ruby on Rails and I believe it&amp;rsquo;s an amazing environment, but after a while you start thinking and designing systems in the ruby way, and you forget how efficient and simple your software architecture could have been if you could leverage multi-threading, parallelization, fast executions and small memory overhead. For many years, I was a C/C++, Delphi and C# developer, and I just started realizing how less complex things could be with the right tool for the job.&lt;/p&gt;
 
-&lt;p&gt;As a Principal Architect I am not very big on the language and framework wars that the interwebs are always fighting about. I believe efficiency, productivity and code maintainability relies mostly on how simple you can architect your solution.&lt;/p&gt;
+&lt;p&gt;As a Principal Architect, I am not very big on the language and framework wars that the interwebs are always fighting about. I believe efficiency, productivity and code maintainability relies mostly on how simple you can architect your solution.&lt;/p&gt;
 
 &lt;h2 id=&#34;the-problem:62be2ce69dda4f10948645c26c4bbfee&#34;&gt;The Problem&lt;/h2&gt;
 
-&lt;p&gt;While working on a piece of our anonymous telemetry and analytics system, our goal was to be able to handle a large amount of POST request from millions of endpoints. The web handler would receive a JSON document that may contain a collection of many payloads that needed to be written to Amazon S3, in order for our map-reduce systems to later operate on this data.&lt;/p&gt;
+&lt;p&gt;While working on a piece of our anonymous telemetry and analytics system, our goal was to be able to handle a large amount of POST requests from millions of endpoints. The web handler would receive a JSON document that may contain a collection of many payloads that needed to be written to Amazon S3, in order for our map-reduce systems to later operate on this data.&lt;/p&gt;
 
-&lt;p&gt;Tradionally we would look into creating an worker-tier architecture, utilizing things such as:&lt;/p&gt;
+&lt;p&gt;Traditionally we would look into creating a worker-tier architecture, utilizing things such as:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Sidekiq&lt;/li&gt;
@@ -39,11 +39,11 @@
 &lt;li&gt;and so on&amp;hellip;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;And setup 2 different cluster, one for the web front-end and another for the workers, so we can scale up the amount of background work we can handle.&lt;/p&gt;
+&lt;p&gt;And setup 2 different clusters, one for the web front-end and another for the workers, so we can scale up the amount of background work we can handle.&lt;/p&gt;
 
-&lt;p&gt;But since the begining, our team knew that we should do this in Go, since during the discussion phases we saw this could be potentially a very large traffic system. I have been using Go for about 2 years or so, we had developed a few systems here at work but none that would get this amount of load.&lt;/p&gt;
+&lt;p&gt;But since the beginning, our team knew that we should do this in Go because during the discussion phases we saw this could be potentially a very large traffic system. I have been using Go for about 2 years or so, and we had developed a few systems here at work but none that would get this amount of load.&lt;/p&gt;
 
-&lt;p&gt;We started by creating a few structures to define the web request payload that we would be receiving in the our POST calls, and the method to upload such payload into our S3 bucket.&lt;/p&gt;
+&lt;p&gt;We started by creating a few structures to define the web request payload that we would be receiving through the POST calls, and a method to upload it into our S3 bucket.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type PayloadCollection struct {
 	WindowsVersion  string    `json:&amp;quot;version&amp;quot;`
@@ -105,15 +105,15 @@ func (p *Payload) UploadToS3() error {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;For moderate loads this could work for the majority of people, but this quickly proved to not work very well at a large scale. We were expecting a lot of requests but not in the order of magnitude we started seeing when we deployed the first version to production.&lt;/p&gt;
+&lt;p&gt;For moderate loads, this could work for the majority of people, but this quickly proved to not work very well at a large scale. We were expecting a lot of requests but not in the order of magnitude we started seeing when we deployed the first version to production. We completely understimated the amount of traffic.&lt;/p&gt;
 
-&lt;p&gt;The approach above is bad in several different ways. There is no way to control how many go routines we are spawning. Since we were getting 1 million POST requests per minute of course this crashed and burned very quickly.&lt;/p&gt;
+&lt;p&gt;The approach above is bad in several different ways. There is no way to control how many go routines we are spawning. And since we were getting 1 million POST requests per minute of course this code crashed and burned very quickly.&lt;/p&gt;
 
 &lt;h3 id=&#34;trying-again:62be2ce69dda4f10948645c26c4bbfee&#34;&gt;Trying again&lt;/h3&gt;
 
-&lt;p&gt;We needed to find a different way. Since the beginning we started discussing how we needed to keep the lifetime of the request handler very short and spawn processing in the background. Of course, this is what you must do in the Ruby on Rails world, otherwise you will block all the available worker web processors, whether it&amp;rsquo;s puma, unicorn, passenger (Let&amp;rsquo;s not get into the JRuby discussion please). We would need to leverage common solutions to do this, such as Resque, Sidekiq, SQS, etc. The list goes on since there are many ways of achieving this.&lt;/p&gt;
+&lt;p&gt;We needed to find a different way. Since the beginning we started discussing how we needed to keep the lifetime of the request handler very short and spawn processing in the background. Of course, this is what you must do in the Ruby on Rails world, otherwise you will block all the available worker web processors, whether you are using puma, unicorn, passenger (Let&amp;rsquo;s not get into the JRuby discussion please). Then we would have needed to leverage common solutions to do this, such as Resque, Sidekiq, SQS, etc. The list goes on since there are many ways of achieving this.&lt;/p&gt;
 
-&lt;p&gt;The second iteration was to create a buffered channel where we could queue up some jobs and upload them to S3, and since we could control the maximum number of items in our queue and we had plenty of RAM to queue up jobs in memory, we thought it was okay to just buffer jobs in the channel queue.&lt;/p&gt;
+&lt;p&gt;So the second iteration was to create a buffered channel where we could queue up some jobs and upload them to S3, and since we could control the maximum number of items in our queue and we had plenty of RAM to queue up jobs in memory, we thought it would be okay to just buffer jobs in the channel queue.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;var Queue chan Payload
 
@@ -131,7 +131,7 @@ func payloadHandler(w http.ResponseWriter, r *http.Request) {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;And then to actually to dequeue jobs from the queue and process them, we were using something similar to this:&lt;/p&gt;
+&lt;p&gt;And then to actually dequeue jobs and process them, we were using something similar to this:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func StartProcessor() {
     for {
@@ -143,7 +143,7 @@ func payloadHandler(w http.ResponseWriter, r *http.Request) {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;To be honest, I have no idea what we were thinking. This must have been a late night full of Red-Bulls. This approach didn&amp;rsquo;t buy us anything, we have traded flawed concurrency with a buffered queue that was simply postponing the problem. Our synchronous processor was only uploading one payload at a time to S3, and since the rate of incoming requests was much larger than the ability of the single processor to upload to S3, our buffered channel queue was quickly reaching its limit and blocking the request handler ability to queue more items.&lt;/p&gt;
+&lt;p&gt;To be honest, I have no idea what we were thinking. This must have been a late night full of Red-Bulls. This approach didn&amp;rsquo;t buy us anything, we have traded flawed concurrency with a buffered queue that was simply postponing the problem. Our synchronous processor was only uploading one payload at a time to S3, and since the rate of incoming requests were much larger than the ability of the single processor to upload to S3, our buffered channel was quickly reaching its limit and blocking the request handler ability to queue more items.&lt;/p&gt;
 
 &lt;p&gt;We were simply avoiding the problem and started a count-down to the death of our system eventually. Our latency rates kept increasing in a constant rate minutes after we deployed this flawed version.&lt;/p&gt;
 
@@ -151,9 +151,9 @@ func payloadHandler(w http.ResponseWriter, r *http.Request) {
 
 &lt;h3 id=&#34;the-better-solution:62be2ce69dda4f10948645c26c4bbfee&#34;&gt;The Better Solution&lt;/h3&gt;
 
-&lt;p&gt;We have decided to utilize common pattern when using Go channels, in order to create a 2-tier channel system, one for queing jobs and one to control how many workers operate on the JobQueue concurrently.&lt;/p&gt;
+&lt;p&gt;We have decided to utilize a common pattern when using Go channels, in order to create a 2-tier channel system, one for queuing jobs and another to control how many workers operate on the JobQueue concurrently.&lt;/p&gt;
 
-&lt;p&gt;The idea was to parallelize the uploads to S3 to a somewhat sustainable rate, one that would not cripple the machine nor start getting connections errors from S3. So we opted for creating a Job/Worker pattern. For those that are familiar with Java, C#, etc, think about this as the Golang way of implementing a Worker Thread-Pool utilizing channels instead.&lt;/p&gt;
+&lt;p&gt;The idea was to parallelize the uploads to S3 to a somewhat sustainable rate, one that would not cripple the machine nor start generating connections errors from S3. So we have opted for creating a Job/Worker pattern. For those that are familiar with Java, C#, etc, think about this as the Golang way of implementing a Worker Thread-Pool utilizing channels instead.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;var (
 	MaxWorker = os.Getenv(&amp;quot;MAX_WORKERS&amp;quot;)
@@ -252,7 +252,7 @@ func (w Worker) Stop() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;During our web server initialization we invoke the &lt;code&gt;StartDispatcher&lt;/code&gt; method to create the pool of workers and starts listening for jobs that will appear in the &lt;code&gt;JobQueue&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;During our web server initialization we invoked the &lt;code&gt;StartDispatcher&lt;/code&gt; method to create the pool of workers and to start listening for jobs that would appear in the &lt;code&gt;JobQueue&lt;/code&gt;.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func StartDispatcher(maxWorkers int) {
 
@@ -284,7 +284,7 @@ func (w Worker) Stop() {
 }
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Note that we provide the number of maximum workers to be instantiated and added to our pool of workers. Since we have utilized Amazon Elasticbeanstalk for this project with a dockerized Go environment, and we always try to follow the &lt;a href=&#34;http://12factor.net/&#34;&gt;12-factor&lt;/a&gt; methodology to configure our systems in production, we read these values from environment variables. That way we can control how many workers and the maximum size of the Job Queue so we can quickly tweak with these values without requiring re-deployment.&lt;/p&gt;
+&lt;p&gt;Note that we provide the number of maximum workers to be instantiated and be added to our pool of workers. Since we have utilized Amazon Elasticbeanstalk for this project with a dockerized Go environment, and we always try to follow the &lt;a href=&#34;http://12factor.net/&#34;&gt;12-factor&lt;/a&gt; methodology to configure our systems in production, we read these values from environment variables. That way we could control how many workers and the maximum size of the Job Queue, so we can quickly tweak these values without requiring re-deployment of the cluster.&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;var (
 	MaxWorker = os.Getenv(&amp;quot;MAX_WORKERS&amp;quot;)
@@ -294,17 +294,17 @@ func (w Worker) Stop() {
 
 &lt;h3 id=&#34;the-immediate-results:62be2ce69dda4f10948645c26c4bbfee&#34;&gt;The Immediate results&lt;/h3&gt;
 
-&lt;p&gt;Immediately after we deployed we saw all of our latency drop to insignificant numbers and our ability to handle requests surged drastically.&lt;/p&gt;
+&lt;p&gt;Immediately after we have deployed it we saw all of our latency rates drop to insignificant numbers and our ability to handle requests surged drastically.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://marcio.io/img/cloudwatch-console.png&#34; alt=&#34;cloudwatch-console&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Minutes after our Elastic Load Balancers were fully warmed up, we saw our Elasticbeanstalk application handling close to 1 million requests per minute. We have a few hours during early morning that our traffic spikes over more than a million per minute.&lt;/p&gt;
+&lt;p&gt;Minutes after our Elastic Load Balancers were fully warmed up, we saw our ElasticBeanstalk application serving close to 1 million requests per minute. We usually have a few hours during the morning hours in which our traffic spikes over to more than a million per minute.&lt;/p&gt;
 
-&lt;p&gt;As soon as we had the new code deployed the number of servers dropped considerabily from 100 servers to about 20 servers.&lt;/p&gt;
+&lt;p&gt;As soon as we have deployed the new code, the number of servers dropped considerably from 100 servers to about 20 servers.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://marcio.io/img/elasticbeanstalk-healthy-hosts.png&#34; alt=&#34;elasticbeanstalk-healthy-hosts&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;After we had properly configured our cluster and the auto-scaling settings, we were able to lower to only 4x EC2 c4.Large instances and with Elastic-Scaling set to spawn a new instance if CPU goes above 90% for 5 minutes straight.&lt;/p&gt;
+&lt;p&gt;After we had properly configured our cluster and the auto-scaling settings, we were able to lower it even more to only 4x EC2 c4.Large instances and the Elastic Auto-Scaling set to spawn a new instance if CPU goes above 90% for 5 minutes straight.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&#34;http://marcio.io/img/elasticbeanstalk-production-dashboard.png&#34; alt=&#34;elasticbeanstalk-production-dashboard&#34; /&gt;&lt;/p&gt;
 
