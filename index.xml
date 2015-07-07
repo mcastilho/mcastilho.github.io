@@ -7,7 +7,318 @@
     <language>en-us</language>
     <author>Marcio Castilho</author>
     <copyright>2015 Marcio Castilho</copyright>
-    <updated>Tue, 07 Jul 2015 11:14:06 EDT</updated>
+    <updated>Tue, 07 Jul 2015 15:24:59 EDT</updated>
+    
+    
+    <item>
+      <title>Supercharging the Atom Editor for Go Development</title>
+      <link>http://marcio.io/2015/07/supercharging-atom-editor-for-go-development/</link>
+      <pubDate>Tue, 07 Jul 2015 15:24:59 EDT</pubDate>
+      <author>Marcio Castilho</author>
+      <guid>http://marcio.io/2015/07/supercharging-atom-editor-for-go-development/</guid>
+      <description>
+
+&lt;p&gt;After years of using Integrated Development Environments (IDE) during my Windows progamming days, such as Visual Basic IDE, Borland Delphi IDE, Visual C++ and more recent Visual Studio, I have ditched all of those when I switched to Mac OS X about 10 years ago.&lt;/p&gt;
+
+&lt;p&gt;My initial transition in the Mac programming world was using excellent Textmate editor at the time. A fast coding editor with great highlight syntax, extension modules and code snippets that made me feel productive again. After the decline of TextMate several years ago, since the application wasn&amp;rsquo;t getting software updates, a lot of people ended up switching to Sublime Text editor and the traditional VIM editor.&lt;/p&gt;
+
+&lt;h2 id=&#34;installing-a-theme:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Installing a Theme&lt;/h2&gt;
+
+&lt;p&gt;You are going to spend most of your day looking at code and staring at this environment, so you should always find a theme that pleases your eyes and that have a natural color balance. I believe this is very personal, and you should find one that you like the most.&lt;/p&gt;
+
+&lt;p&gt;What I have been using is the combination of the One Dark UI Theme and the Monokai-Seti Syntax theme. I really enjoy the aesthetics of this duo.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-theme.png&#34; alt=&#34;atom-theme&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here is how it looks like on my environment:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-editor.png&#34; alt=&#34;atom-editor&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;monokai-seti:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;monokai-seti&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://atom.io/packages/monokai-seti&#34;&gt;https://atom.io/packages/monokai-seti&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;installing-a-progammers-font:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Installing a Progammers Font&lt;/h2&gt;
+
+&lt;p&gt;One of the first things I wanted to do when opening Atom the first time, was to install and use my preferred programming font. I have been using the free &amp;ldquo;Inconsolata&amp;rdquo; font for a while.&lt;/p&gt;
+
+&lt;p&gt;You can find and download it here: &lt;a href=&#34;http://www.levien.com/type/myfonts/inconsolata.html&#34;&gt;http://www.levien.com/type/myfonts/inconsolata.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;You can easily change the font being used in the editor view through the standard editor settings.&lt;/p&gt;
+
+&lt;h2 id=&#34;installing-languages:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Installing Languages&lt;/h2&gt;
+
+&lt;p&gt;The standard packages that come with Atom cover most of your language needs. There are 2 packages that I have missed for my Go development, one is the support for Dockerfile syntax and Google Protobuf syntax, which both I use in a lot of my projects.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;language-docker: &lt;a href=&#34;https://atom.io/packages/language-docker&#34;&gt;https://atom.io/packages/language-docker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;language-protobuf: &lt;a href=&#34;https://atom.io/packages/language-protobuf&#34;&gt;https://atom.io/packages/language-protobuf&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;installing-packages:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Installing Packages&lt;/h2&gt;
+
+&lt;h4 id=&#34;go-plus:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;go-plus&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://atom.io/packages/go-plus&#34;&gt;https://atom.io/packages/go-plus&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This package provides almost all of Go Language support in Atom for tools, build flows, linters, vet and coverage tools. It also contains many code snippets and other features.&lt;/p&gt;
+
+&lt;p&gt;Make sure you have all the golang tools installed, by using the following command from your shell:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;go get -u golang.org/x/tools/cmd/...
+go get -u github.com/golang/lint/golint
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There are many features in go-plus. But my favorite while developing my Go code is that I have instant feedback on my syntax and build errors. As soon as I save a file, go-plus runs in the background a miriad of tools like go vet, go oracle, go build, etc, and displays in the bottom of your editor any errors and warnings you may have. This is totally awesome and speeds up your dev cycles dramatically.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-go-plus-linter.png&#34; alt=&#34;atom-go-plus-linter&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;It has also the ability to display on the editor gutter an indication of any build errors on that line, so you can easily spot which lines has an errors. Errors are displayed in red and warnings in yellowish.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-go-plus-gutter-errors.png&#34; alt=&#34;atom-go-plus-gutter-errors&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;go-rename:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;go-rename&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://atom.io/packages/go-rename&#34;&gt;https://atom.io/packages/go-rename&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This package provides intelligent variable, methods and struct safe renaming by plugging into the Go rename tool. You can easily initiate a rename refactoring dialog by pressing &lt;code&gt;ALT-R&lt;/code&gt; when you have an identifier selected.&lt;/p&gt;
+
+&lt;h2 id=&#34;making-it-a-little-more-similar-to-vim:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Making it a little more similar to VIM&lt;/h2&gt;
+
+&lt;p&gt;You may ask &amp;ldquo;Why not using VIM instead?&amp;rdquo;. The fact is that I have for more than a year, but I wanted to try out Atom, and I am really enjoying the experience, specially since I have all the VIM commands I have been using here in the Atom Editor.&lt;/p&gt;
+
+&lt;p&gt;The fact is that I am a basic VIM user, and most of the benefits for me is about caret navigation, insertion, text replacements, line deletions, line jumps, etc. Once you have installed the nice &lt;code&gt;vim-mode&lt;/code&gt; package by the Atom team, you have all that, and lot more commands that I haven&amp;rsquo;t really used yet from VIM.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;vim-mode: &lt;a href=&#34;https://atom.io/packages/vim-mode&#34;&gt;https://atom.io/packages/vim-mode&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;vim-surround: &lt;a href=&#34;https://atom.io/packages/vim-surround&#34;&gt;https://atom.io/packages/vim-surround&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;last-cursor-position: &lt;a href=&#34;https://atom.io/packages/last-cursor-position&#34;&gt;https://atom.io/packages/last-cursor-position&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&#34;mapping-a-few-commands-in-the-keymap-file:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Mapping a few commands in the Keymap File&lt;/h5&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cson&#34;&gt;&#39;atom-text-editor:not(mini).autocomplete-active&#39;:
+  &#39;ctrl-p&#39;: &#39;core:move-up&#39;
+  &#39;ctrl-n&#39;: &#39;core:move-down&#39;
+
+&#39;.vim-mode.command-mode:not(.mini)&#39;:
+  &#39;ctrl-f&#39;: &#39;core:page-down&#39;
+  &#39;/&#39;: &#39;find-and-replace:show&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;One VIM module I miss is Easy-Motion. There was one package for Atom but is currently not compatible with Atom 1.0. I am sure somebody will update or create a version soon.&lt;/p&gt;
+
+&lt;h2 id=&#34;customizing-your-treeview:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Customizing your TreeView&lt;/h2&gt;
+
+&lt;h4 id=&#34;file-icons:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;file-icons&lt;/h4&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://atom.io/packages/file-icons&#34;&gt;https://atom.io/packages/file-icons&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;At first, I thought this package would make my treeview way too colorful with a bunch of different colored icons for my filetypes in the TreeView, Tabs, and Fuzzy finder dialogs. But I decided to try it out and now I think this is really cool. In fact, it does help me find, at a quick glance, the file I am looking for specially in the root of my project. There are several settings in the package to control whether to show color-less icons and/or to only colorize icons if a file has been modified.&lt;/p&gt;
+
+&lt;p&gt;Below you can see how your TreeView would look like once you have this packaged installed. Give it a try, I am sure you will like it.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/file-icons.png&#34; alt=&#34;file-icons&#34; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&#34;applying-some-css-modifications:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Applying some CSS modifications&lt;/h4&gt;
+
+&lt;p&gt;The default line height for the TreeView is usually a little bit too tall, so I wanted to reduce the padding between the lines. Another modification was to use the same fixed font I use in my editor to keep the style consistent. I usually use the &lt;code&gt;Inconsolata&lt;/code&gt; font.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;// style the background color of the tree view
+.tree-view {
+    font-family: &amp;quot;Inconsolata&amp;quot;;
+    font-size: 12px;
+}
+
+.list-group li:not(.list-nested-item),
+.list-tree li:not(.list-nested-item),
+.list-group li.list-nested-item &amp;gt; .list-item,
+.list-tree li.list-nested-item &amp;gt; .list-item {
+    line-height:18px;
+}
+
+.list-group .selected:before,
+.list-tree .selected:before {
+    height:18px;
+}
+
+.list-tree.has-collapsable-children .list-nested-item &amp;gt; .list-tree &amp;gt; li,
+.list-tree.has-collapsable-children .list-nested-item &amp;gt; .list-group &amp;gt; li {
+    padding-left:12px;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;code-snippets:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Code Snippets&lt;/h3&gt;
+
+&lt;p&gt;Most modern programming editors and IDEs comes with code-completion for common keywords and code structures based on the language of choice. It usually contains most of the common ones, but it is far from complete. There lots of rooms for improvements here in the standard stock packages, specially the support for Go via the standard Atom Go langauge package and go-plus package.&lt;/p&gt;
+
+&lt;p&gt;But Atom allows you to create your own code snippets repository in the &lt;code&gt;snippets.cson&lt;/code&gt; file. Open the Snippets file from the Atom menu, and you can start creating your own snippets library.&lt;/p&gt;
+
+&lt;p&gt;You will have to create your entries under a &lt;code&gt;.source.go&lt;/code&gt; scope, so your snippets will only be suggested by the auto-completion feature when you are editing Go files.&lt;/p&gt;
+
+&lt;p&gt;Here are a few that I have added recently:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-cson&#34;&gt;&#39;.source.go&#39;:
+    &#39;return nil and error&#39;:
+      &#39;prefix&#39;: &#39;rne&#39;
+      &#39;body&#39;: &#39;return nil, err&#39;
+
+    &#39;return false and error&#39;:
+      &#39;prefix&#39;: &#39;rfe&#39;
+      &#39;body&#39;: &#39;return false, err&#39;
+
+    &#39;Return True and Nil&#39;:
+      &#39;prefix&#39;: &#39;rte&#39;
+      &#39;body&#39;: &#39;return true, nil&#39;
+
+    &#39;Import logrus&#39;:
+      &#39;prefix&#39;: &#39;logrus&#39;
+      &#39;body&#39;: &#39;log &amp;quot;github.com/Sirupsen/logrus&amp;quot;&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once you have defined your snippets, they immediately show up in your auto-completion suggestions. I love this feature, and I try to add common snippets of my Go code to really speed up typing.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-complete-snippets.png&#34; alt=&#34;atom-complete-snippets&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;dash:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Dash&lt;/h3&gt;
+
+&lt;p&gt;Dash is a fantastic commercial application for Mac OS X that gives you instant offline access to 150+ API documentation sets from many languages and frameworks. I have been using it for a few years with Ruby development and now with Go.&lt;/p&gt;
+
+&lt;p&gt;You can find more about it here: &lt;a href=&#34;https://kapeli.com/dash&#34;&gt;https://kapeli.com/dash&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-dash.png&#34; alt=&#34;atom-dash&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There is an Atom package that integrates your editor shortcuts via &lt;code&gt;CTRL-H&lt;/code&gt; once you have a text selected and opens up directly in the Dash application. Pretty hand when you want to quickly jumpt to a method declaration documentation.&lt;/p&gt;
+
+&lt;h4 id=&#34;dash-1:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;dash&lt;/h4&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://atom.io/packages/dash&#34;&gt;https://atom.io/packages/dash&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;styling-your-editor:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Styling your Editor&lt;/h2&gt;
+
+&lt;p&gt;One of the biggest advantages of Atom editor compared to other native editors, is its ability to completely customize the interface using Cascade Stylesheets (CSS). Almost all aspects of the editor can be tweaked and improved if it doesn&amp;rsquo;t appeal you.&lt;/p&gt;
+
+&lt;h3 id=&#34;changing-symbol-view-appearance:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Changing Symbol View appearance&lt;/h3&gt;
+
+&lt;p&gt;One of the areas that really bothered me was the stock Symbols-View dialog, the lines were too tall and could barely fit many rows in the lookup window. I liked the way Sublime implemented and I decided to customize it to resembles more of what Sublime had.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;.symbols-view {
+  &amp;amp;.select-list ol.list-group li .primary-line,
+  &amp;amp;.select-list ol.list-group li .secondary-line {
+
+    font-family: Inconsolata;
+    font-size: 14px;
+
+    // let lines wrap
+    text-overflow: initial;
+    white-space: initial;
+    overflow: initial;
+
+    // reduce line-height
+    line-height: 1.0em;
+    padding-top: .1em;
+    padding-bottom: .0em;
+
+    // make sure wrapped lines get padding
+    // padding-left: 21px;
+    &amp;amp;.icon:before {
+      margin-left: -21px;
+    }
+
+    .character-match {
+        color: rgb(200, 200, 10) !important;
+    }
+  }
+}
+
+.symbols-view {
+  &amp;amp;.select-list ol.list-group li .secondary-line {
+      float: right;
+      margin-top: -12px;
+      padding-top: 0em;
+      padding-bottom: 0em;
+      font-size: 12px;
+      color: rgba(200, 200, 10, 0.8) !important;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The end result is a much slicker Symbols-View. When you press &lt;code&gt;Command+R&lt;/code&gt; the symbols view appear, and you can see that line-heights are shorter and the line numbers aligned to the right of the view.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-symbol-view-styles.png&#34; alt=&#34;atom-symbol-view-styles&#34; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&#34;styling-line-selection:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Styling Line Selection&lt;/h3&gt;
+
+&lt;p&gt;There is an interesting package called Hightlight-Line:&lt;br /&gt;
+&lt;a href=&#34;https://atom.io/packages/highlight-line&#34;&gt;https://atom.io/packages/highlight-line&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;This package allows customization of the line selection styles. In my case, I have added a dashed yellow border to the bottom and top my selection. I like the way it looks and helps me determine the range of selection specially at the last line where it could be a partial selection.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-highlight-selected.png&#34; alt=&#34;atom-highlight-selected&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;You can replace &amp;lsquo;solid&amp;rsquo;, with &amp;lsquo;dashed&amp;rsquo; or &amp;lsquo;dotted&amp;rsquo; on the CSS selector depending of what you have
+set in the package settings page.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;atom-text-editor::shadow {
+
+    .line.highlight-line {
+        background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .line.highlight-line-multi-line-dashed-bottom {
+        border-bottom-color: yellow !important;
+    }
+
+    .line.highlight-line-multi-line-dashed-top {
+        border-top-color: yellow !important;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;generating-ctags-for-your-go-code:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Generating Ctags for your Go code&lt;/h2&gt;
+
+&lt;p&gt;Auto-completion is a very important feature when programming, and is usually very intrusive to the developers. So the suggestions it should make needs to be very good or it will annoy you really quick. Missing suggestions is one of the most frustating things when it comes to auto-completion functionality.&lt;/p&gt;
+
+&lt;p&gt;When you know a structure, interface or method name you want to use the Auto-completion so you can type fast and jump to the next work. When you are constantly not finding the items that should be there your developer happiness level suffers tremendously.&lt;/p&gt;
+
+&lt;p&gt;There is an awesome tool called &lt;code&gt;gotags&lt;/code&gt; that is ctags compatible generator for Go Language. It utilizes the power of AST and Parsing classes in the Go standard library to really understand and capture all the structure, interfaces, variables and methods names. It generates a much better ctags list than the standard ctags standard tools.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;gotags: &lt;a href=&#34;https://github.com/jstemmer/gotags&#34;&gt;https://github.com/jstemmer/gotags&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;You can install it by running the following commands:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;go get -u github.com/jstemmer/gotags
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And then generate tags simply by invoking it like this from the root of your source code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;gotags -tag-relative=true -R=true -sort=true -f=&amp;quot;tags&amp;quot; -fields=+l .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This will generate a new tags file in the root of your code, and Atom auto-completion will be much more smarter about your Go code.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://marcio.io/img/atom-go-tags.png&#34; alt=&#34;atom-go-tags&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;conclusion:0386400aabdb04ed1ae1687fb75a55b9&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Whether you like Sublime Text or have been a VIM fanatic, you should give Atom a shot now that they have reached version 1.0 a couple of weeks ago.&lt;/p&gt;
+
+&lt;p&gt;Especially since it is an open-source project backed by Github.com, there is a lot of activity and the community is growing incredibly fast.&lt;/p&gt;
+
+&lt;p&gt;Give it a try !!&lt;/p&gt;
+</description>
+    </item>
+    
     
     
     <item>
