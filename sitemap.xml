@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://marcio.io/</loc>
-    <lastmod>2015-07-06T16:49:35-04:00</lastmod>
+    <lastmod>2015-07-07T11:14:06-04:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://marcio.io/2015/07/calculating-multiple-file-hashes-in-a-single-pass/</loc>
+    <lastmod>2015-07-07T11:14:06-04:00</lastmod>
   </url>
   
   <url>

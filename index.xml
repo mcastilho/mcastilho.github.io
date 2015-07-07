@@ -7,7 +7,184 @@
     <language>en-us</language>
     <author>Marcio Castilho</author>
     <copyright>2015 Marcio Castilho</copyright>
-    <updated>Mon, 06 Jul 2015 16:49:35 EDT</updated>
+    <updated>Tue, 07 Jul 2015 11:14:06 EDT</updated>
+    
+    
+    <item>
+      <title>Calculating Multiple File Hashes in a Single Pass</title>
+      <link>http://marcio.io/2015/07/calculating-multiple-file-hashes-in-a-single-pass/</link>
+      <pubDate>Tue, 07 Jul 2015 11:14:06 EDT</pubDate>
+      <author>Marcio Castilho</author>
+      <guid>http://marcio.io/2015/07/calculating-multiple-file-hashes-in-a-single-pass/</guid>
+      <description>
+
+&lt;p&gt;We do a lot of file hash calculations at work, where we commonly go through millions of files a day using a diverse number of hashing algorithms. The standard Go library is amazing, and it has many structures and methods to do all that kind of stuff. Sometimes you just have to look for some new methods that opens up the possibilities even more.&lt;/p&gt;
+
+&lt;h3 id=&#34;the-goal:87d0f12486ddffd4cd2e61232b39b4f8&#34;&gt;The Goal&lt;/h3&gt;
+
+&lt;p&gt;The initial goal of this code was to calculate multiple hashes on a single file residing on disk, and only perform a single read, instead of reading the whole contents of the file multiple times for each hash algorithm.&lt;/p&gt;
+
+&lt;p&gt;The idea was to return an structure with the results of the desired hash:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type HashInfo struct {
+	Md5    string `json:&amp;quot;md5&amp;quot;`
+	Sha1   string `json:&amp;quot;sha1&amp;quot;`
+	Sha256 string `json:&amp;quot;sha256&amp;quot;`
+	Sha512 string `json:&amp;quot;sha512&amp;quot;`
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;looking-into-the-standard-library:87d0f12486ddffd4cd2e61232b39b4f8&#34;&gt;Looking into the standard library&lt;/h3&gt;
+
+&lt;p&gt;As park of the Go standard library &lt;code&gt;io&lt;/code&gt; package, we can find this function below:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func MultiWriter(writers ...Writer) Writer
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here is a snippet of the source code implementation of this function in the &lt;code&gt;io&lt;/code&gt; package:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type multiWriter struct {
+    writers []Writer
+}
+
+func (t *multiWriter) Write(p []byte) (n int, err error) {
+	for _, w := range t.writers {
+		n, err = w.Write(p)
+		if err != nil {
+			return
+		}
+		if n != len(p) {
+			err = ErrShortWrite
+			return
+		}
+	}
+	return len(p), nil
+}
+
+func MultiWriter(writers ...Writer) Writer {
+	w := make([]Writer, len(writers))
+	copy(w, writers)
+	return &amp;amp;multiWriter{w}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The MultiWriter method creates a writer that duplicates its writes to all the provided writers, similar to the Unix &lt;code&gt;tee&lt;/code&gt; command.&lt;/p&gt;
+
+&lt;p&gt;This is interesting because since all of hash functions in standard library adheres to this interface:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;type Hash interface {
+        // Write (via the embedded io.Writer interface) adds more data to the running hash.
+        // It never returns an error.
+        io.Writer
+
+        // Sum appends the current hash to b and returns the resulting slice.
+        // It does not change the underlying hash state.
+        Sum(b []byte) []byte
+
+        // Reset resets the Hash to its initial state.
+        Reset()
+
+        // Size returns the number of bytes Sum will return.
+        Size() int
+
+        // BlockSize returns the hash&#39;s underlying block size.
+        // The Write method must be able to accept any amount
+        // of data, but it may operate more efficiently if all writes
+        // are a multiple of the block size.
+        BlockSize() int
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;the-approach:87d0f12486ddffd4cd2e61232b39b4f8&#34;&gt;The Approach&lt;/h3&gt;
+
+&lt;p&gt;Therefore, we could create create a &lt;code&gt;MultiWriter&lt;/code&gt; that is going to write to multiple Hash implementations only performing a single read pass through the original file, as you can see in the code below:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;func CalculateBasicHashes(rd io.Reader) HashInfo {
+
+	md5 := md5.New()
+	sha1 := sha1.New()
+	sha256 := sha256.New()
+	sha512 := sha512.New()
+
+	// For optimum speed, Getpagesize returns the underlying system&#39;s memory page size.
+	pagesize := os.Getpagesize()
+
+	// wraps the Reader object into a new buffered reader to read the files in chunks
+	// and buffering them for performance.
+	reader := bufio.NewReaderSize(rd, pagesize)
+
+	// creates a multiplexer Writer object that will duplicate all write
+	// operations when copying data from source into all different hashing algorithms
+	// at the same time
+	multiWriter := io.MultiWriter(md5, sha1, sha256, sha512)
+
+	// Using a buffered reader, this will write to the writer multiplexer
+	// so we only traverse through the file once, and can calculate all hashes
+	// in a single byte buffered scan pass.
+	//
+	_, err := io.Copy(multiWriter, reader)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var info HashInfo
+
+	info.Md5 = hex.EncodeToString(md5.Sum(nil))
+	info.Sha1 = hex.EncodeToString(sha1.Sum(nil))
+	info.Sha256 = hex.EncodeToString(sha256.Sum(nil))
+	info.Sha512 = hex.EncodeToString(sha512.Sum(nil))
+
+	return info
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here is a sample of command line utility to calculate the multiple hashes.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
+
+import (
+	&amp;quot;bufio&amp;quot;
+	&amp;quot;crypto/md5&amp;quot;
+	&amp;quot;crypto/sha1&amp;quot;
+	&amp;quot;crypto/sha256&amp;quot;
+	&amp;quot;crypto/sha512&amp;quot;
+	&amp;quot;encoding/hex&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;io&amp;quot;
+	&amp;quot;log&amp;quot;
+	&amp;quot;os&amp;quot;
+	&amp;quot;runtime&amp;quot;
+)
+
+func main() {
+	args := os.Args[1:]
+
+	var filename string
+	filename = args[0]
+
+    // open an io.Reader from the file we would like to calculate hashes
+	f, err := os.OpenFile(filename, os.O_RDONLY, 0)
+	if err != nil {
+		log.Fatalln(&amp;quot;Cannot open file: %s&amp;quot;, filename)
+	}
+	defer f.Close()
+
+	info := CalculateBasicHashes(f)
+
+	fmt.Println(&amp;quot;md5    :&amp;quot;, info.Md5)
+	fmt.Println(&amp;quot;sha1   :&amp;quot;, info.Sha1)
+	fmt.Println(&amp;quot;sha256 :&amp;quot;, info.Sha256)
+	fmt.Println(&amp;quot;sha512 :&amp;quot;, info.Sha512)
+	fmt.Println()
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Of course that in a real-world scenario we wouldn&amp;rsquo;t be invoking the command line utility for every single file. This was just a simple example on how to write a little command line utility to demonstrate this approach. The real benefit is when we are traversing through millions of files and performing hash calculations using a single read pass through the contents file. This has a significant impact on our ability to fast go through our file repositories.&lt;/p&gt;
+
+&lt;p&gt;There are so many interesting functions and interfaces in the standard library that everyone should take look at the source code once in a while.&lt;/p&gt;
+</description>
+    </item>
+    
     
     
     <item>
