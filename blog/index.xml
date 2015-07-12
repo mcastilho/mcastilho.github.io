@@ -174,7 +174,7 @@ func (o *Once) Do(f func()) {
 
 &lt;p&gt;What this means is the we can leverage the awesome Go sync package to invoke a method exactly only once. Therefore, we can invoke the &lt;code&gt;once.Do()&lt;/code&gt; method like this:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;once.Do(func {
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;once.Do(func() {
     // perform safe initialization here
 })
 &lt;/code&gt;&lt;/pre&gt;
@@ -194,7 +194,7 @@ var instance *singleton
 var once sync.Once
 
 func GetInstance() *singleton {
-    once.Do(func {
+    once.Do(func() {
         instance = &amp;amp;singleton{}
     })
     return instance
