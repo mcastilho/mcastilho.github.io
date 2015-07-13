@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://marcio.io/</loc>
-    <lastmod>2015-07-12T13:50:25-04:00</lastmod>
+    <lastmod>2015-07-13T11:07:43-04:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://marcio.io/2015/07/cheap-mapreduce-in-go/</loc>
+    <lastmod>2015-07-13T11:07:43-04:00</lastmod>
   </url>
   
   <url>
